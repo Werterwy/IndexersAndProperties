@@ -22,63 +22,54 @@ namespace IndexersAndProperties
             this.hasDiscount = hasDiscount;
         }
 
+        public double this[string paymentType]
+        {
+            get
+            {
+                switch (paymentType.ToLower())
+                {
+                    case "отопление":
+                        double heatingRate = (season == 1) ? 15 : 10;
+                        return squareMeters * heatingRate;
+                    case "вода":
+                        double waterRate = (season == 1) ? 7 : 5;
+                        return residents * waterRate;
+                    case "газ":
+                        double gasRate = (season == 1) ? 13 : 7;
+                        return residents * gasRate;
+                    case "ремонт":
+                        double repairRate = (season == 1) ? 8 : 5;
+                        return squareMeters * repairRate;
+                    default:
+                        return 0; // Неизвестный тип платежа
+                }
+            }
+        }
+
         public void CalculatePayments()
         {
-            // Базовые тарифы весна/лето
-            double heatingRate = 10;
-            double waterRate = 5;
-            double gasRate = 7; 
-            double repairRate = 5;
-
-            if (season == 1) 
-            {
-                // Базовые тарифы осень/зима
-                heatingRate = 15; // на 1 м2
-                waterRate = 7; // на 1 человека
-                gasRate = 13; // на 1 человека
-                repairRate = 8; // на 1 м2
-
-            }
-
-            // Расчет стоимости отопления
-            double heatingCost = squareMeters * heatingRate;
-
-            // Расчет стоимости воды
-            double waterCost = residents * waterRate;
-
-            // Расчет стоимости газа
-            double gasCost = residents * gasRate;
-
-            // Расчет стоимости текущего ремонта
-            double repairCost = squareMeters * repairRate;
-
-            // Расчет общей стоимости
-            double totalCost = heatingCost + waterCost + gasCost + repairCost;
-
-            // Расчет льготной скидки (если есть)
-            double discount = 0;
-
-            if (hasDiscount == 1) // если есть льготы
-            {
-                discount = totalCost * 0.3; // 30% скидка
-                hasDiscount = 30;
-
-
-            }else if (hasDiscount == 2)
-            {
-                discount = totalCost * 0.5;
-                hasDiscount = 50;
-            }
-
-            // Вывод таблицы с платежами
             Console.WriteLine("Вид платежа\tНачислено\tЛьготная скидка\tИтого");
-            Console.WriteLine("Отопление  \t{0}      \t{1}%           \t{2}", heatingCost, hasDiscount, heatingCost * (100 - hasDiscount) / 100);
-            Console.WriteLine("Вода       \t{0}      \t{1}%           \t{2}", waterCost, hasDiscount, waterCost * (100 - hasDiscount) / 100);
-            Console.WriteLine("Газ        \t{0}      \t{1}%           \t{2}", gasCost, hasDiscount, gasCost * (100 - hasDiscount) / 100);
-            Console.WriteLine("Ремонт     \t{0}      \t{1}%           \t{2}", repairCost, hasDiscount, repairCost * (100 - hasDiscount) / 100);
-            Console.WriteLine("");
-            // Вывод итоговой суммы
-            Console.WriteLine("Итого      \t{0}", totalCost - discount);
+            double totalCost = 0;
+
+            string[] paymentTypes = { "Отопление", "Вода", "Газ", "Ремонт" };
+
+            foreach (var paymentType in paymentTypes)
+            {
+                double paymentAmount = this[paymentType.ToLower()];
+                double discount = 0;
+
+                if (hasDiscount == 1 || hasDiscount==2)
+                {
+                    discount = paymentAmount * ((hasDiscount == 1) ? 0.3 : 0.5);
+                }
+
+                double totalAmount = paymentAmount - discount;
+                totalCost += totalAmount;
+
+                Console.WriteLine($"{paymentType}\t             {paymentAmount}\t      {discount * 100 / paymentAmount}%\t       {totalAmount}");
+            }
+
+            Console.WriteLine("Итого\t{0}", totalCost);
         }
     }
 

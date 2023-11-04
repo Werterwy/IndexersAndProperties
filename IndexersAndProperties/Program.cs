@@ -47,7 +47,7 @@ namespace IndexersAndProperties
                 Console.WriteLine("Какая у вас льгота (ветеран труда-1, ветеран войны-2): ");
                 hasDiscount = int.Parse(Console.ReadLine());
             }
-            else if(hasDiscount == 2)
+            else if(hasDiscount == 0)
             {
                 hasDiscount = 0;
             }
